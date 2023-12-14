@@ -9,6 +9,7 @@ export default function Input({ setContent, setIsWriting, isWriting, temperature
   async function submit(e) {
     e.preventDefault()
 
+    if(prompt == "") return
     if(isWriting) return
     if(temperature >= 2) {
       setContent("HAL 9000 has been deactivated...")

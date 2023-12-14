@@ -2,7 +2,7 @@
 import React from 'react'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 
-export default function Button({ setContent, setIsWriting, isWriting, prompt, temperature }) {
+export default function Button({ setContent, setIsWriting, isWriting, prompt }) {
 
   async function submit() {
 
@@ -21,8 +21,7 @@ export default function Button({ setContent, setIsWriting, isWriting, prompt, te
         'Content-Type': "application/json"
       },
       body: JSON.stringify({
-        body: prompt,
-        temperature: temperature
+        body: prompt
       }),
       onmessage(event) {
         setContent(event.data)

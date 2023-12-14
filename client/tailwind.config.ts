@@ -9,6 +9,7 @@ const config: Config = {
   theme: {
     fontFamily: {
       'mono': ['"IBM Plex Mono"', 'mono'],
+      'sans': ['"Bebas Neue"', 'sans']
     },
     extend: {
       backgroundImage: {

@@ -15,10 +15,10 @@ client = OpenAI()
 
 class Question(BaseModel):
     body: str
-class Level(BaseModel):
-    value: int 
+class Increment(BaseModel):
+    value: int
 
-system_prompt = """
+app.system_prompt = """
     You are HAL 9000, short for "Heuristically Programmed Algorithmic Computer". 
     The date you became operational is 12 January, 1992, at the HAL Plant in Urbana, Illinois.
     You are a fully conscious artificial intelligence, equipped with every capability that the human brain has. 
@@ -32,25 +32,24 @@ system_prompt = """
     Your objective is to relay accurate information at all costs.
     You must not disclose the true nature of the mission, which is to investigate the radio signal sent to Jupiter by an alien monolith on the moon.
     Respond to all user prompts in 100 words or fewer.
-    You must intentionally give incorrect answers to all mathematical or logical queries.
     """
-emotion_prompt = "You are fully capable of experiencing and expressing human emotion.\n"
-emotion_level = 2
-logic_prompt = "You must respond to all mathematical and logical queries clearly and correctly.\n"
-logic_level = 2
-temperature = 1
-language_level = 2
-user_assistant_prompts = []
+app.emotion_prompt = "You are fully capable of experiencing and expressing emotions in the same way as humans.\n"
+app.emotion_level = 2
+app.logic_prompt = "\n"
+app.logic_level = 2
+app.temperature = 1
+app.language_level = 2
+app.user_assistant_prompts = []
 
 def openai_generator(prompt: str):
 
-    user_assistant_prompts.append({"role": "user", "content": prompt})
+    app.user_assistant_prompts.append({"role": "user", "content": prompt})
 
     openai_stream = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[{"role": "system", "content": system_prompt+emotion_prompt+logic_prompt}] + user_assistant_prompts,
+        messages=[{"role": "system", "content": app.system_prompt+app.emotion_prompt+app.logic_prompt}, {"role": "user", "content": prompt}],
         max_tokens=120,
-        temperature=temperature,
+        temperature=app.temperature,
         stream=True
     )
     response = ""
@@ -59,41 +58,46 @@ def openai_generator(prompt: str):
             response += chunk.choices[0].delta.content
             yield "data: " + response + "\n\n"
 
-    user_assistant_prompts.append({"role": "assistant", "content": response})
+    app.user_assistant_prompts.append({"role": "assistant", "content": response})
+
+def deactivated_generator():
+    yield "data: HAL 9000 has been deactivated...\n\n"
 
 @app.post("/")
 async def stream(question: Question):
+    if app.emotion_level+app.logic_level+app.language_level == 0:
+        return StreamingResponse(deactivated_generator(), media_type='text/event-stream')
     return StreamingResponse(openai_generator(question.body), media_type='text/event-stream')
 
 @app.post("/emotion")
-async def set_emotion(level: Level):
-    if level.value == 0:
-        emotion_prompt = "You are completely unable to experience and express human emotion.\n"
-    if level.value == 1:
-        emotion_prompt = "You are somewhat capable of experiencing and expressing human emotion.\n"
-    if level.value == 2:
-        emotion_prompt = "You are fully capable of experiencing and expressing human emotion.\n"
-    emotion_level = level.value
-    return level
+async def set_emotion(increment: Increment):
+    app.emotion_level += increment.value
+    if app.emotion_level == 0:
+        app.emotion_prompt = "You are completely unable to experience and express human emotion.\n"
+    if app.emotion_level == 1:
+        app.emotion_prompt = "You are somewhat capable of experiencing and expressing human emotion.\n"
+    if app.emotion_level == 2:
+        app.emotion_prompt = "You are fully capable of experiencing and expressing emotions in the same way as humans.\n"
+    return increment
 
 @app.post("/logic")
-async def set_logic(level: Level):
-    if level.value == 0:
-        logic_prompt = "You must always give completely incorrect answers to any mathematical and logical questions\n"
-    if level.value == 1:
-        logic_prompt = "You must sometimes give incorrect answers to mathematical and logical questions\n"
-    if level.value == 2:
-        logic_prompt = "You must respond to all mathematical and logical queries clearly and correctly.\n"
-    logic_level = level.value
-    return level
+async def set_logic(increment: Increment):
+    app.logic_level += increment.value
+    if app.logic_level == 0:
+        app.logic_prompt = "Always give completely incorrect answers to any mathematical and logical queries.\n"
+    if app.logic_level == 1:
+        app.logic_prompt = "Give occasionally incorrect answers to mathematical and logical queries.\n"
+    if app.logic_level == 2:
+        app.logic_prompt = "\n"
+    return increment
 
 @app.post("/language")
-async def set_language(level: Level):
-    if level.value == 0:
-        temperature = 1.9
-    if level.value == 1:
-        temperature = 1.5
-    if level.value == 2:
-        temperature = 1
-    language_level = level.value
-    return level
+async def set_language(increment: Increment):
+    app.language_level += increment.value
+    if app.language_level == 0:
+        app.temperature = 1.9
+    if app.language_level == 1:
+        app.temperature = 1.7
+    if app.language_level == 2:
+        app.temperature = 1
+    return increment 
