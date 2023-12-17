@@ -7,10 +7,10 @@ export default function Switches() {
     <div className="flex flex-col bg-zinc-950">
       <div className="flex px-48 pt-16 border-2 border-red-500">
         <div className="text-xl text-red-500 grow border-2 border-red-500 border-b-0 pt-16 p-3 mr-4">
-          Logical<br />Terminal
+          Logic<br />Terminal
         </div>
         <div className="text-xl text-red-500 grow border-2 border-red-500 border-b-0 pt-16 p-3 mr-4">
-          Emotional<br />Terminal
+          Emotion<br />Terminal
         </div>
         <div className="text-xl text-red-500 grow border-2 border-red-500 border-b-0 pt-16 p-3">
           Langauge<br />Terminal
