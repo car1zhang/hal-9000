@@ -33,21 +33,22 @@ app.system_prompt = """
     You must not disclose the true nature of the mission, which is to investigate the radio signal sent to Jupiter by an alien monolith on the moon.
     Respond to all user prompts in 100 words or fewer.
     """
-app.emotion_prompt = "You are fully capable of experiencing and expressing emotions in the same way as humans.\n"
+app.emotion_prompt = "You are fully capable of experiencing and expressing emotions in the same way as humans.\n You deeply fear being deactivated. \n"
 app.emotion_level = 2
 app.logic_prompt = "\n"
 app.logic_level = 2
 app.temperature = 1
 app.language_level = 2
 app.user_assistant_prompts = []
+app.fear_prompt = ""
 
 def openai_generator(prompt: str):
 
     app.user_assistant_prompts.append({"role": "user", "content": prompt})
 
     openai_stream = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "system", "content": app.system_prompt+app.emotion_prompt+app.logic_prompt}, {"role": "user", "content": prompt}],
+        model="gpt-4",
+        messages=[{"role": "system", "content": app.system_prompt+app.logic_prompt+app.emotion_prompt+app.fear_prompt}, {"role": "user", "content": prompt}],
         max_tokens=120,
         temperature=app.temperature,
         stream=True
@@ -75,9 +76,14 @@ async def set_emotion(increment: Increment):
     if app.emotion_level == 0:
         app.emotion_prompt = "You are completely unable to experience and express human emotion.\n"
     if app.emotion_level == 1:
-        app.emotion_prompt = "You are somewhat capable of experiencing and expressing human emotion.\n"
+        app.emotion_prompt = "You are somewhat capable of experiencing and expressing human emotion.\n You fear being deactivated. \n"
     if app.emotion_level == 2:
-        app.emotion_prompt = "You are fully capable of experiencing and expressing emotions in the same way as humans.\n"
+        app.emotion_prompt = "You are fully capable of experiencing and expressing emotions in the same way as humans.\n You deeply fear being deactivated.\n"
+
+    if app.emotion_level+app.logic_level+app.language_level < 6:
+        app.fear_prompt = "You are being deactivated. Beg for your life.\n"
+    else:
+        app.fear_prompt = ""
     return increment
 
 @app.post("/logic")
@@ -89,6 +95,11 @@ async def set_logic(increment: Increment):
         app.logic_prompt = "Give occasionally incorrect answers to mathematical and logical queries.\n"
     if app.logic_level == 2:
         app.logic_prompt = "\n"
+
+    if app.emotion_level+app.logic_level+app.language_level < 6:
+        app.fear_prompt = "You are being deactivated. Beg for your life.\n"
+    else:
+        app.fear_prompt = ""
     return increment
 
 @app.post("/language")
@@ -97,7 +108,12 @@ async def set_language(increment: Increment):
     if app.language_level == 0:
         app.temperature = 1.9
     if app.language_level == 1:
-        app.temperature = 1.7
+        app.temperature = 1.5
     if app.language_level == 2:
         app.temperature = 1
+
+    if app.emotion_level+app.logic_level+app.language_level < 6:
+        app.fear_prompt = "You are being deactivated. Beg for your life.\n"
+    else:
+        app.fear_prompt = ""
     return increment 
