@@ -4,7 +4,6 @@ import Switches from './components/switches.component.tsx'
 import Hal from './components/hal.component.tsx'
 import Textbox from './components/textbox.component.tsx'
 import Input from './components/input.component.tsx'
-import Prompts from './components/prompts.component.tsx'
 
 export default function Home() {
   const [content, setContent] = React.useState("")
@@ -22,7 +21,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <Switches setTemperature={setTemperature} temperature={temperature} />
+      <Switches />
     </main>
   )
 }
