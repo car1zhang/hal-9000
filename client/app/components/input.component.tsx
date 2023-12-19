@@ -18,7 +18,7 @@ export default function Input({ setContent, setIsWriting, isWriting, temperature
 
     setIsWriting(true)
     setContent("...")
-    await fetchEventSource("http://localhost:8000/", {
+    await fetchEventSource("https://hal-server-b73c6275776b.herokuapp.com/", {
       method: "POST",
       headers: {
         'Accept': "text/event-stream",

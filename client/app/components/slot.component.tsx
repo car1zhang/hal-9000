@@ -8,7 +8,7 @@ export default function Slot({ attribute }) {
   function toggle() {
     if(on) {
       setOn(false)
-      fetch("http://localhost:8000/"+attribute, {
+      fetch("https://hal-server-b73c6275776b.herokuapp.com/"+attribute, {
         method: "POST",
         mode: "cors",
         headers: {
@@ -18,7 +18,7 @@ export default function Slot({ attribute }) {
       })
     } else {
       setOn(true)
-      fetch("http://localhost:8000/"+attribute, {
+      fetch("https://hal-server-b73c6275776b.herokuapp.com/"+attribute, {
         method: "POST",
         mode: "cors",
         headers: {
