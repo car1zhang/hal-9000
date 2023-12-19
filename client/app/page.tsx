@@ -13,7 +13,7 @@ export default function Home() {
   
   return (
     <main className="flex flex-col bg-zinc-800">
-      <div className="flex h-screen px-96 pt-80 bg-[url('../public/bg.png')] bg-bottom bg-cover">
+      <div className="flex h-screen px-72 pt-64 bg-[url('../public/bg.png')] bg-bottom bg-cover">
         <div className="bg-zinc-950 border-4 border-b-0 border-zinc-200 p-7 pb-14 flex w-full mx-20">
           <Hal />
           <div className="w-full flex flex-col">
